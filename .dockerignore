@@ -1,0 +1,13 @@
+*
+!package.json
+!yarn.lock
+!packages/accounts/package.json
+!packages/accounts/dist
+!packages/common/package.json
+!packages/common/dist
+!packages/api/package.json
+!packages/api/dist
+!packages/rt-api/package.json
+!packages/rt-api/dist
+!packages/cms-api/package.json
+!packages/cms-api/dist
