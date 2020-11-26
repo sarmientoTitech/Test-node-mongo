@@ -37,7 +37,7 @@ steps:
       - ./helm/main-api
       - "--install"
       - "--namespace"
-      - "coachx-services"
+      - "test-service"
       - "--values"
       - "./helm/main-api/values.yaml"
       - "--set"
