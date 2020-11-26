@@ -3,16 +3,13 @@ kind: Service
 metadata:
   name: {{ include "main-api.fullname" . }}
   labels:
-    {{- include "main-api.labels" . | nindent 4 }}
+{{ include "main-api.labels" . | indent 4 }}
 spec:
   type: {{ .Values.service.type }}
   ports:
     - port: {{ .Values.service.port }}
       targetPort: {{ .Values.service.internalPort }}
       protocol: TCP
-      # name: http
   selector:
-    app.kubernetes.io/name: {{ include "coachx-api.name" . }}
+    app.kubernetes.io/name: {{ include "main-api.name" . }}
     app.kubernetes.io/instance: {{ .Release.Name }}
-  # selector:
-  #   {{- include "main-api.selectorLabels" . | nindent 4 }}
