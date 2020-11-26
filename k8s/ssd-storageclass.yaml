@@ -1,0 +1,8 @@
+# use this to easily create ssd storage
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: ssd-storage-class
+provisioner: kubernetes.io/gce-pd
+parameters:
+  type: pd-ssd

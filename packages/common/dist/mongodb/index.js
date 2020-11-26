@@ -9,7 +9,8 @@ let mongoclient;
 function getMongoURI() {
     let mongoURI = process.env.NODE_ENV === 'production'
         ? process.env.MONGO_URI
-        : 'mongodb://localhost';
+        : 'mongodb+srv://sarmiento:aljilaas@cluster0.sqfsh.mongodb.net/test?retryWrites=true&w=majority';
+    // : 'mongodb://localhost'
     return mongoURI;
 }
 async function mongoConnect() {
