@@ -5,6 +5,7 @@ import { mongoConnect, getMongoClient } from '@pes/common'
 import { ApolloServer, gql } from 'apollo-server-express'
 import { resolvers } from './resolvers'
 import { ObjectID } from 'mongodb'
+
 const app = express()
 const PORT = 4000
 
@@ -39,7 +40,7 @@ app.get('/', (req, res) => {
   res.status(200).send('working')
 })
 
-app.listen({ port: PORT }, async () => {
+app.listen(PORT, async () => {
   console.log(`🚀 express app listening on port: ${PORT}`)
   console.log(
     `🚀 apollo app listening on at path: http://localhost:${PORT}${server.graphqlPath}`,

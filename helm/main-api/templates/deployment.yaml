@@ -3,55 +3,42 @@ kind: Deployment
 metadata:
   name: {{ include "main-api.fullname" . }}
   labels:
-    {{- include "main-api.labels" . | nindent 4 }}
+{{ include "main-api.labels" . | indent 4 }}
 spec:
+  replicas: {{ .Values.replicaCount }}
+  revisionHistoryLimit: 2
   selector:
     matchLabels:
-      {{- include "main-api.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/name: {{ include "main-api.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
   template:
     metadata:
-      {{- with .Values.podAnnotations }}
-      annotations:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
       labels:
-        {{- include "main-api.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/name: {{ include "main-api.name" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
     spec:
-      {{- with .Values.imagePullSecrets }}
-      imagePullSecrets:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-      securityContext:
-        {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
         - name: {{ .Chart.Name }}
-          securityContext:
-            {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
-            - name: http
-              containerPort: 80
+            - name: http-app
+              containerPort: {{ .Values.service.internalPort }}
               protocol: TCP
           livenessProbe:
             httpGet:
               path: /
-              port: http
+              port: http-app
           readinessProbe:
             httpGet:
               path: /
-              port: http
+              port: http-app
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
-      {{- with .Values.nodeSelector }}
-      nodeSelector:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-      {{- with .Values.affinity }}
-      affinity:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-      {{- with .Values.tolerations }}
-      tolerations:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
+          env:
+            - name: NODE_ENV
+              value: {{ .Values.env.NODE_ENV }}
+            - name: MONGO_URI
+              value: {{ .Values.env.MONGO_URI }}
+            - name: GOOGLE_APPLICATION_CREDENTIALS
+              value: {{ .Values.env.GOOGLE_APPLICATION_CREDENTIALS }}

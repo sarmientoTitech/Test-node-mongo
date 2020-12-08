@@ -34,7 +34,7 @@ app.use(express_1.default.urlencoded({ extended: false }));
 app.get('/', (req, res) => {
     res.status(200).send('working');
 });
-app.listen({ port: PORT }, async () => {
+app.listen(PORT, async () => {
     console.log(`🚀 express app listening on port: ${PORT}`);
     console.log(`🚀 apollo app listening on at path: http://localhost:${PORT}${server.graphqlPath}`);
     await common_1.mongoConnect();
