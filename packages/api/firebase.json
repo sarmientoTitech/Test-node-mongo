@@ -1,7 +1,6 @@
 {
   "hosting": {
     "public": "public",
-    "site": "api-musicx",
     "ignore": [
       "firebase.json",
       "**/.*",
