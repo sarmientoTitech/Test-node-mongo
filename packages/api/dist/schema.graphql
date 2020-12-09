@@ -1,8 +1,0 @@
-# =================================
-# types
-
-# USER
-
-type Query {
-  hello: String
-}
