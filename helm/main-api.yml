@@ -1,0 +1,119 @@
+---
+# Source: main-api/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: RELEASE-NAME-main-api
+  labels:
+    helm.sh/chart: main-api-0.1.0
+    app.kubernetes.io/name: main-api
+    app.kubernetes.io/instance: RELEASE-NAME
+    app.kubernetes.io/version: "1.16.0"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: 4000
+      protocol: TCP
+  selector:
+    app.kubernetes.io/name: main-api
+    app.kubernetes.io/instance: RELEASE-NAME
+---
+# Source: main-api/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: RELEASE-NAME-main-api
+  labels:
+    helm.sh/chart: main-api-0.1.0
+    app.kubernetes.io/name: main-api
+    app.kubernetes.io/instance: RELEASE-NAME
+    app.kubernetes.io/version: "1.16.0"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  replicas: 1
+  revisionHistoryLimit: 2
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: main-api
+      app.kubernetes.io/instance: RELEASE-NAME
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: main-api
+        app.kubernetes.io/instance: RELEASE-NAME
+    spec:
+      containers:
+        - name: main-api
+          image: "gcr.io/sarmiento-musicx/main-api:latest"
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http-app
+              containerPort: 4000
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http-app
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http-app
+          resources: {}
+          env:
+            - name: NODE_ENV
+              value: production
+            - name: MONGO_URI
+              value: mongodb://localhost
+            - name: GOOGLE_APPLICATION_CREDENTIALS
+              value:
+---
+# Source: main-api/templates/ingress.yaml
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: RELEASE-NAME-main-api
+  labels:
+    helm.sh/chart: main-api-0.1.0
+    app.kubernetes.io/name: main-api
+    app.kubernetes.io/instance: RELEASE-NAME
+    app.kubernetes.io/version: "1.16.0"
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+    cert-manager.io/issuer: letsencrypt-prod
+    kubernetes.io/ingress.class: nginx
+spec:
+  tls:
+    - hosts:
+        - "api-fernando.com"
+      secretName: api-tls
+  rules:
+    - host: "api-fernando.com"
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: RELEASE-NAME-main-api
+              servicePort: 80
+---
+# Source: main-api/templates/tests/test-connection.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "RELEASE-NAME-main-api-test-connection"
+  labels:
+    helm.sh/chart: main-api-0.1.0
+    app.kubernetes.io/name: main-api
+    app.kubernetes.io/instance: RELEASE-NAME
+    app.kubernetes.io/version: "1.16.0"
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+    "helm.sh/hook": test
+spec:
+  containers:
+    - name: wget
+      image: busybox
+      command: ["wget"]
+      args: ["RELEASE-NAME-main-api:80"]
+  restartPolicy: Never
